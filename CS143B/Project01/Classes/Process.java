@@ -15,13 +15,17 @@ public class Process {
         Status = new Pair<Integer, Integer>(type, index);
         Creation_Tree = new Pair<Process, ArrayList<Process>>(parent, new ArrayList<Process>());
     }
-    /*Process(Process process) {
-        PID = process.PID;
-        Priority = process.Priority;
-        Other_Resources = process.Other_Resources;
-        Status = new Pair<Integer, Integer>(process.Status.first(), process.Status.second());
-        Creation_Tree = new Pair<Process, ArrayList<Integer>>(process.Creation_Tree.first(), process.Creation_Tree.second());
-    }*/
+    @Override
+    public int hashCode() {
+        return PID.hashCode();
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if(obj==null || !(obj instanceof Process))
+            return false;
+        Process u=(Process) obj;
+        return u.PID == PID;
+    }
     public void setPID(String pid) {
         PID = pid;
     }

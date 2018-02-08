@@ -1,14 +1,20 @@
 import java.util.Scanner;
 import Classes.Process;
+import Classes.Resource;
 import Classes.ReadyList;
+import Classes.Resources;
 
 public class Scheduler {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String currentCommand;
         String newPID;
+        String newRID;
         Integer newPriority;
+        Integer newUnits;
+        //Add line to initialize resources.
         ReadyList readylist = new ReadyList();
+        Resource currentResource;
         Process currentProcess = readylist.getNextProcess();
         do{
             System.out.print(currentProcess.PID + ' ');
@@ -37,6 +43,13 @@ public class Scheduler {
                              currentProcess = readylist.getNextProcess();
                              break;
                 case "req" : 
+                             newRID = sc.next();
+                             newUnits = sc.nextInt();
+                             currentResource = resources.getResource(newRID);
+                             if(!currentResource.Request(currentProcess, newUnits)) {
+                                 readylist.removeProcess(currentProcess);
+                                 currentProcess = readylist.getNextProcess();
+                             }
                              break;
                 case "de"  :
                              newPID = sc.next();
