@@ -48,4 +48,10 @@ public class Resources {
         }
         return toReturn;    
     }
+    public void printList() {
+        r1.print();
+        r2.print();
+        r3.print();
+        r4.print();
+    }
 }

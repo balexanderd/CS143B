@@ -17,14 +17,17 @@ public class Scheduler {
         ReadyList readylist = new ReadyList();
         Resource currentResource;
         Process currentProcess = readylist.getNextProcess();
+        Process ready;
         processes.put(currentProcess.PID, currentProcess);
         do{
             System.out.print(currentProcess.PID + ' ');
             currentCommand = sc.next();
             ArrayList<Process> children = new ArrayList<Process>();
             while(!( currentCommand.equals("cr") || currentCommand.equals("to") ||
-                     currentCommand.equals("req") || currentCommand.equals("de") ||
-                     currentCommand.equals("init") || currentCommand.equals("print") )) {
+                     currentCommand.equals("req") || currentCommand.equals("rel") ||
+                     currentCommand.equals("de") || currentCommand.equals("init") ||
+                     currentCommand.equals("print_proc") || currentCommand.equals("print_read") ||
+                     currentCommand.equals("print_reso") )) {
                 System.out.print("Error ");
                 currentCommand = sc.next();
             }
@@ -55,18 +58,33 @@ public class Scheduler {
                                   currentProcess = readylist.getNextProcess();
                               }
                               break;
+                case "rel" :
+                              newRID = sc.next();
+                              newUnits = sc.nextInt();
+                              currentResource = resources.getResource(newRID);
+                              currentResource.Release(currentProcess, newUnits);
+                              ready = resources.Unblock();
+                              while(ready != null) { //Unblock processes if resources are free.
+                                  readylist.addProcess(ready);
+                                  ready = resources.Unblock();
+                              }
+                              if( currentProcess.Priority < readylist.peekPriority() ) {
+                                  readylist.addProcess(currentProcess);
+                                  currentProcess = readylist.getNextProcess();
+                              }
+                              break;
                 case "de"  :
                               newPID = sc.next();
                               Process toDelete = processes.remove(newPID);
                               if(toDelete != null) {
                                   toDelete.Creation_Tree.first.removeChild(toDelete); //remove process from parent.
-                                  readylist.removeProcess(toDelete); //take process and all children off readylist.
+                                  readylist.deleteProcess(toDelete); //take process and all children off readylist.
                                   children = toDelete.getChildren(); //get children.
                                   children.add(toDelete);
                                   resources.RemoveAll(children); //take process and all children off resources.
                                   for(int i = 0; i < children.size(); i++)
                                       processes.remove(children.get(i).PID); //remove processes from map.
-                                  Process ready = resources.Unblock();
+                                  ready = resources.Unblock();
                                   while(ready != null) { //Unblock processes if resources are free.
                                       readylist.addProcess(ready);
                                       ready = resources.Unblock();
@@ -81,13 +99,19 @@ public class Scheduler {
                               resources = new Resources();
                               currentProcess = readylist.getNextProcess();
                               break;
-                case "print":
+                case "print_proc":
                               children.add(readylist.Init);
                               for(int i = 0; i < children.size(); i++) {
                                   System.out.print(children.get(i).Creation_Tree.first.PID + ":" + children.get(i).PID + ' ');
                                   children.addAll(children.get(i).Creation_Tree.second);
                               }
                               System.out.println();
+                              break;
+                case "print_read":
+                              readylist.printList();
+                              break;
+                case "print_reso":
+                              resources.printList();
                               break;
                 default    :             
                              break;
