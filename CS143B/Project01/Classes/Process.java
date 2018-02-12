@@ -13,7 +13,10 @@ public class Process {
         Priority = priority;
         Other_Resources = new ArrayList<Integer>(); //Maybe better as queue.
         Status = new Pair<Integer, Integer>(type, index);
-        Creation_Tree = new Pair<Process, ArrayList<Process>>(parent, new ArrayList<Process>());
+        if(parent == null)
+            Creation_Tree = new Pair<Process, ArrayList<Process>>(this, new ArrayList<Process>());
+        else
+            Creation_Tree = new Pair<Process, ArrayList<Process>>(parent, new ArrayList<Process>());
     }
     @Override
     public int hashCode() {
@@ -54,6 +57,9 @@ public class Process {
         Other_Resources.remove(rid);
     }
     public ArrayList<Process> getChildren() {
-        return Creation_Tree.second();
+        ArrayList<Process> children = Creation_Tree.second();
+        for(int i = 0; i < children.size(); i++)
+            children.addAll(children.get(i).Creation_Tree.second());
+        return children;
     }
 }

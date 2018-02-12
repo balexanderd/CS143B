@@ -20,11 +20,18 @@ public class ReadyList {
             Init = process;
     }
     public void removeProcess(Process process) {
+        if(process.Priority == 1) Level_One.remove(process);
+        else Level_Two.remove(process);
+    }
+    public void deleteProcess(Process process) {
+        if(process.equals(Init)) {
+            Init = null;
+            return;
+        }
         ArrayList<Process> toDelete = process.getChildren();
         Level_Two.removeAll(toDelete);
         Level_One.removeAll(toDelete);
-        if(process.Priority == 1) Level_One.remove(toDelete);
-        else Level_Two.remove(toDelete);
+        removeProcess(process);
     }
     public Process getNextProcess() {
         if(!Level_Two.isEmpty())
@@ -40,5 +47,22 @@ public class ReadyList {
         if(priority_level == 1)
             return Level_One.size();
         return Level_Two.size();
+    }
+    public Integer peekPriority() {
+        if(!Level_Two.isEmpty())
+            return 2;
+        if(!Level_One.isEmpty())
+            return 1;
+        return 0;
+    }
+    public void printList() {
+        System.out.print("Level_Two: ");
+        for(int i = 0; i < Level_Two.size(); i++)
+            System.out.print(Level_Two.get(i).PID + ' ');
+        System.out.print("\nLevel_One: ");
+        for(int i = 0; i < Level_One.size(); i++)
+            System.out.print(Level_One.get(i).PID + ' ');
+        System.out.println();
+        System.out.println(Init.PID);
     }
 }

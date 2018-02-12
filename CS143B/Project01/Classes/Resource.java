@@ -30,9 +30,16 @@ public class Resource {
         Units_Per_Request.put(process, units);
         return false;
     }
-    public void Release(Process process) {
-        if(Units_Per_Process.containsKey(process))
-            U_Units += Units_Per_Process.remove(Process_List.remove(process));
+    public void Release(Process process, Integer units) {
+        if(Units_Per_Process.containsKey(process)) {
+            Integer totalOccupied = Units_Per_Process.get(process);
+            if(units == totalOccupied && Process_List.remove(process))
+                U_Units += Units_Per_Process.remove(process);
+            else {
+                Units_Per_Process.replace(process, totalOccupied - units);
+                U_Units += totalOccupied = units;
+            }
+        }
     }
     public Process Unblock() {
         if(!Blocked_List.isEmpty())
@@ -58,5 +65,15 @@ public class Resource {
         }
         Process_List.removeAll(processes);
         Blocked_List.removeAll(processes);
+    }
+    public void print() {
+        System.out.print("Status: " + RID + ' ' + K_Units + ' ' + U_Units);
+        System.out.print("\nRunning: ");
+        for(int i = 0; i < Process_List.size(); i++)
+            System.out.print(Process_List.get(i).PID + ':' + Units_Per_Process.get(Process_List.get(i)) + ' ');
+        System.out.print("\nBlocked: ");
+        for(int i = 0; i < Blocked_List.size(); i++)
+            System.out.print(Blocked_List.get(i).PID + ':' + Units_Per_Request.get(Blocked_List.get(i)) + ' ');
+        System.out.println();
     }
 }
