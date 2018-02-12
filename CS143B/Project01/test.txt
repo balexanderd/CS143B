@@ -10,3 +10,61 @@ rel R3 1
 rel R1 1
 req R4 2
 de x
+to
+to
+de y
+cr u 2
+rel R2 2
+rel R1 1
+cr v 2
+req R3 2
+req R4 1
+de y
+de z
+to
+to
+req R1 1
+req R2 2
+rel R3 3
+cr x 1
+cr y 1
+cr q 1
+cr r 1
+to
+req R2 2
+cr z 2
+cr z 4
+req R1 3
+req R2 1
+de k
+de z
+de v
+rel R1 3
+req R2 1
+de x
+de y
+de z
+req R2 2
+req R1 1
+cr q 1
+cr r 1
+to
+req R2 2
+rel R2 1
+rel R1 2
+to
+to
+de x
+de y 
+cr p 1
+to
+de y
+de x
+req R3 2
+to
+req R4 1
+de z
+de u
+de v
+to
+to
