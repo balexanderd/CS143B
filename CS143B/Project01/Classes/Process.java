@@ -41,8 +41,17 @@ public class Process {
     public void addChild(Process child) {
         Creation_Tree.second.add(child);
     }
-    public void removeChild(Process child) {
-        Creation_Tree.second.remove(child);
+    public Process removeChild(Process child) {
+        if(child != null) {
+            if(Creation_Tree.second.remove(child))
+                return child;
+            ArrayList<Process> children = new ArrayList<Process>(Creation_Tree.second);
+            for(int i = 0; i < children.size(); i++)
+                children.addAll(children.get(i).Creation_Tree.second);
+            if(children.contains(child))
+                return child;
+        }
+        return null;
     }
     public Process getChild(String child_pid) {
         for(int i = 0; i < Creation_Tree.second.size(); i++)

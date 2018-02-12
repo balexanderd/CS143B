@@ -55,14 +55,20 @@ public class Scheduler {
                 case "cr"  :
                               newPID = sc.next();
                               newPriority = sc.nextInt();
-                              Process newProcess = new Process( newPID, newPriority, currentProcess,
-                                                                1, readylist.sizeOf(newPriority) );
-                              currentProcess.addChild(newProcess);
-                              readylist.addProcess(newProcess);
-                              processes.put(newPID, newProcess);
-                              if(newPriority > currentProcess.Priority) {
-                                  readylist.addProcess(currentProcess);
-                                  currentProcess = readylist.getNextProcess();
+                              if(newPriority > 0 && newPriority < 3 && !processes.containsKey(newPID)) {
+                                  Process newProcess = new Process( newPID, newPriority, currentProcess,
+                                                                    1, readylist.sizeOf(newPriority) );
+                                  currentProcess.addChild(newProcess);
+                                  readylist.addProcess(newProcess);
+                                  processes.put(newPID, newProcess);
+                                  if(newPriority > currentProcess.Priority) {
+                                      readylist.addProcess(currentProcess);
+                                      currentProcess = readylist.getNextProcess();
+                                  }
+                              }
+                              else {
+                                  print(useFile, outputStream, "error ");
+                                  errorSet = true;
                               }
                               break;
                 case "to"  :
@@ -73,7 +79,8 @@ public class Scheduler {
                               newRID = sc.next();
                               newUnits = sc.nextInt();
                               currentResource = resources.getResource(newRID);
-                              if(newUnits > 0 && currentResource != null && newUnits <= currentResource.K_Units) {
+                              if(!currentProcess.equals(readylist.Init) && newUnits > 0 &&
+                              currentResource != null && newUnits <= currentResource.K_Units) {
                                   if(!currentResource.Request(currentProcess, newUnits)) {
                                       readylist.removeProcess(currentProcess);
                                       currentProcess = readylist.getNextProcess();
@@ -88,8 +95,10 @@ public class Scheduler {
                               newRID = sc.next();
                               newUnits = sc.nextInt();
                               currentResource = resources.getResource(newRID);
-                              if(currentResource.Units_Per_Process.containsKey(currentProcess) &&
-                              newUnits > 0 && newUnits <= currentResource.K_Units) {
+                              if(!currentProcess.equals(readylist.Init) && currentResource != null &&
+                              currentResource.Units_Per_Process.containsKey(currentProcess) &&
+                              newUnits > 0 && newUnits <= currentResource.K_Units &&
+                              newUnits <= currentResource.Units_Per_Process.get(currentProcess)) {
                                   currentResource.Release(currentProcess, newUnits);
                                   ready = resources.Unblock();
                                   while(ready != null) { //Unblock processes if resources are free.
@@ -108,8 +117,11 @@ public class Scheduler {
                               break;
                 case "de"  :
                               newPID = sc.next();
-                              Process toDelete = processes.remove(newPID);
-                              if(toDelete != null) {
+                              Process toDelete = processes.get(newPID);
+                              if(toDelete != null && !toDelete.equals(currentProcess))
+                                  toDelete = currentProcess.removeChild(toDelete);
+                              if(toDelete != null && !toDelete.equals(readylist.Init)) {
+                                  processes.remove(newPID);
                                   toDelete.Creation_Tree.first.removeChild(toDelete); //remove process from parent.
                                   readylist.deleteProcess(toDelete); //take process and all children off readylist.
                                   children = toDelete.getChildren(); //get children.
